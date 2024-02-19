@@ -39,6 +39,7 @@
                 android:scaleType="centerCrop"
                 app:riv_oval="true"/>
             <TextView
+                android:id="@+id/textAddImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
