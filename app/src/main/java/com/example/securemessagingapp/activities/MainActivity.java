@@ -1,8 +1,10 @@
-package com.example.securemessagingapp;
+package com.example.securemessagingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.securemessagingapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
