@@ -48,6 +48,6 @@
         app:layout_constraintBaseline_toBottomOf="@id/imageProfile"
         app:layout_constraintEnd_toStartOf="@id/imageSignOut"
         app:layout_constraintStart_toEndOf="@id/imageProfile"
-        app:layout_constraintTop_toTopOf="@id/imageProfile"
+        app:layout_constraintTop_toTopOf="@id/imageProfile"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
