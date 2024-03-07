@@ -11,11 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.securemessagingapp.databinding.ItemContainerUserBinding;
 import com.example.securemessagingapp.models.User;
-import com.example.securemessagingapp.utilities.Constants;
 
 import java.util.List;
 
-public class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
     private final List<User>users;
 
     public UsersAdapter(List<User> users) {
@@ -43,8 +42,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
     public int getItemCount() {
         return users.size();
     }
-}
-    class UserViewHolder extends RecyclerView{
+
+    class UserViewHolder extends RecyclerView.ViewHolder{
         ItemContainerUserBinding binding;
         UserViewHolder(ItemContainerUserBinding itemContainerUserBinding){
             super(itemContainerUserBinding.getRoot());
@@ -57,10 +56,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
         }
     }
 
-
-
-  private Bitmap getUserImage(String encodedImage){
-    byte[] bytes=Base64.decode(encodedImage,Base64.DEFAULT);
-    return BitmapFactory.decodeByteArray(bytes,0, bytes.length);
-  }
+    private Bitmap getUserImage(String image) {
+        byte[] bytes=Base64.decode(image,Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes,0, bytes.length);
     }
+}
