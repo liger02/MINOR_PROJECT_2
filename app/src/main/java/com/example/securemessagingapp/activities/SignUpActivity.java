@@ -134,9 +134,9 @@ public class SignUpActivity extends AppCompatActivity {
             showToast("Enter valid Email");
             return false;
         }
-        else if(binding.inputPassword.getText().toString().trim().isEmpty())
+        else if(binding.inputPassword.getText().toString().trim().isEmpty() || binding.inputPassword.getText().toString().length()<8 )
         {
-            showToast("Enter password");
+            showToast("Password must be of minimum 8 characters");
             return false;
         }
         else if(binding.inputConfirmPassword.getText().toString().trim().isEmpty()){

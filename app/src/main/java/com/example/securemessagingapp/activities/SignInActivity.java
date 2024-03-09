@@ -17,6 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class SignInActivity extends AppCompatActivity {
     private ActivitySignInBinding binding;
@@ -64,7 +65,7 @@ public class SignInActivity extends AppCompatActivity {
                     }
                     else{
                         loading(false);
-                        showToast("Unable to sign in");
+                        showToast("Unable to sign in! Please enter valid email or password");
                     }
                 });
     }
@@ -91,8 +92,8 @@ public class SignInActivity extends AppCompatActivity {
             showToast("Enter valid email");
             return false;
         }
-        else if(binding.inputPassword.getText().toString().trim().isEmpty()){
-            showToast("Enter password");
+        else if(binding.inputPassword.getText().toString().trim().isEmpty() || binding.inputPassword.getText().toString().length()<8){
+            showToast("Password must be of minimum 8 characters");
             return false;
         }
         else{
