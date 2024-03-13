@@ -126,6 +126,10 @@ public class SignUpActivity extends AppCompatActivity {
             showToast("Enter name");
             return false;
         }
+        else if(binding.inputName.getText().toString().matches(".*\\d.*")){
+            showToast("Name contains number(s)");
+            return false;
+        }
         else if(binding.inputEmail.getText().toString().trim().isEmpty()){
             showToast("Enter Email");
             return false;
