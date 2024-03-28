@@ -2,12 +2,14 @@ package com.example.securemessagingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 
 import com.example.securemessagingapp.adapters.UsersAdapter;
 import com.example.securemessagingapp.databinding.ActivityUserBinding;
+import com.example.securemessagingapp.listeners.UserListener;
 import com.example.securemessagingapp.models.User;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
@@ -17,7 +19,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends AppCompatActivity implements UserListener {
     private ActivityUserBinding binding;
     private PreferenceManager preferenceManager;
 
@@ -57,7 +59,7 @@ public class UserActivity extends AppCompatActivity {
                             users.add(user);
                         }
                         if(users.size()>0){
-                            UsersAdapter usersAdapter=new UsersAdapter(users);
+                            UsersAdapter usersAdapter=new UsersAdapter(users,this);
                             binding.usersRecycleView.setAdapter(usersAdapter);
                             binding.usersRecycleView.setVisibility(View.VISIBLE);
                         }else{
@@ -79,5 +81,12 @@ public class UserActivity extends AppCompatActivity {
         }else{
             binding.progressBar.setVisibility(View.VISIBLE);
         }
+    }
+    public void onUserClicked(User user)
+    {
+        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+        intent.putExtra(Constants.KEY_USER,user);
+        startActivity(intent);
+        finish();
     }
 }
