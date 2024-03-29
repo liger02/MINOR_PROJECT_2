@@ -9,9 +9,9 @@ import com.example.securemessagingapp.databinding.ItemContainerSentMessageBindin
 import com.example.securemessagingapp.models.ChatMessage;
 
 public class ChatAdapter {
-    private final List<ChatMessage> chatMessage;
-private final Bitmap receiverProfileImage;
-private final String senderId;
+    //private final List<ChatMessage> chatMessage;
+//private final Bitmap receiverProfileImage;
+//private final String senderId;
  static class SentMessageViewHolder extends RecyclerView.ViewHolder{
      private  final ItemContainerSentMessageBinding binding;
      SentMessageViewHolder(ItemContainerSentMessageBinding itemContainerSentMessageBinding)
