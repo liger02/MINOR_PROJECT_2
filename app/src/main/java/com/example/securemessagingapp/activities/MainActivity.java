@@ -1,7 +1,5 @@
 package com.example.securemessagingapp.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +7,11 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.securemessagingapp.adapters.RecentConversationAdapter;
 import com.example.securemessagingapp.databinding.ActivityMainBinding;
+import com.example.securemessagingapp.models.ChatMessage;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,11 +19,16 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
          private ActivityMainBinding binding;
          private PreferenceManager preferenceManager;
+         private List<ChatMessage> conversations;
+         private RecentConversationAdapter conversationAdapter;
+         private FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +37,17 @@ public class MainActivity extends AppCompatActivity {
         binding=ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         preferenceManager=new PreferenceManager(getApplicationContext());
+        init();
         loadUserDetails();
         getToken();
         setListener();
+    }
+
+    private void init(){
+        conversations=new ArrayList<>();
+        conversationAdapter=new RecentConversationAdapter(conversations);
+        binding.conversationsRecycleView.setAdapter(conversationAdapter);
+        database = FirebaseFirestore.getInstance();
     }
     private void setListener(){
 
