@@ -1,11 +1,8 @@
 package com.example.securemessagingapp.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 
 import com.example.securemessagingapp.adapters.UsersAdapter;
 import com.example.securemessagingapp.databinding.ActivityUserBinding;
@@ -19,7 +16,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserActivity extends AppCompatActivity implements UserListener {
+public class UserActivity extends BaseActivity implements UserListener {
     private ActivityUserBinding binding;
     private PreferenceManager preferenceManager;
 
