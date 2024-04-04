@@ -73,12 +73,12 @@ public class MainActivity extends AppCompatActivity implements ConversionListene
     public void showToast(String message){
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
-    public void listenConversations{
+    public void listenConversations(){
         database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Constants.KEY_SENDER_ID,PreferenceManager.getString(Constants.KEY_USER_ID))
+                .whereEqualTo(Constants.KEY_SENDER_ID,preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
         database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Constants.KEY_RECEIVER_ID,PreferenceManager.getString(Constants.KEY_USER_ID))
+                .whereEqualTo(Constants.KEY_RECEIVER_ID,preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
     }
     private final EventListener<QuerySnapshot>eventListener=((value, error) -> {
@@ -118,12 +118,12 @@ public class MainActivity extends AppCompatActivity implements ConversionListene
                 }
             }
             Collections.sort(conversations,(obj1,obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
-            conversationsAdapter.notifyDataSetChanged();
+            conversationAdapter.notifyDataSetChanged();
             binding.conversationsRecycleView.smoothScrollToPosition(0);
             binding.conversationsRecycleView.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
         }
-    };
+    });
 
         private void getToken(){
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
