@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ChatActivity extends BaseActivity {
     private ActivityChatBinding binding;
@@ -36,6 +37,7 @@ public class ChatActivity extends BaseActivity {
     private PreferenceManager preferenceManager;
     private FirebaseFirestore database;
     private String conversionID=null;
+    private Boolean isReceiverAvailable=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +93,27 @@ public class ChatActivity extends BaseActivity {
         }
         binding.inputMessage.setText(null);
 
+    }
+    private void listenAvailabitlityOfReceiver(){
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .document(receiverUser.id).addSnapshotListener(ChatActivity.this,(value,error)->{
+            if(error!=null){
+                return;
+            }
+            if(value!=null){
+                if(value.getLong(Constants.KEY_AVAILABILITY)!=null){
+                    int availability= Objects.requireNonNull(
+                            value.getLong(Constants.KEY_AVAILABILITY)
+                    ).intValue();
+                    isReceiverAvailable=availability ==1;
+                }
+            }
+            if (isReceiverAvailable){
+                binding.textAvailability.setVisibility(View.VISIBLE);
+            }else{
+                binding.textAvailability.setVisibility(View.GONE);
+            }
+        });
     }
     private void listenMessages()
     {
@@ -214,5 +237,9 @@ public class ChatActivity extends BaseActivity {
         }
     };
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+  listenAvailabitlityOfReceiver();
+    }
 }
