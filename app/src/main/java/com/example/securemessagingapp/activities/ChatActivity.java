@@ -2,7 +2,6 @@ package com.example.securemessagingapp.activities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.DnsResolver;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.example.securemessagingapp.network.ApiClient;
 import com.example.securemessagingapp.network.ApiService;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
-import com.google.android.gms.common.api.Response;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +37,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.jar.JarException;
+
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 
 public class ChatActivity extends BaseActivity {
     private ActivityChatBinding binding;
@@ -132,48 +135,96 @@ public class ChatActivity extends BaseActivity {
     {
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
-    private void sendNotification(String messageBody)
-    {
-        ApiClient.getClient().create(ApiService.class).sendMessage(
-                Constants.getRemoteMsgHeaders(),
-                messageBody
+//    private void sendNotification(String messageBody)
+//    {
+//        ApiClient.getClient().create(ApiService.class).sendMessage(
+//                Constants.getRemoteMsgHeaders(),
+//                messageBody
+//
+//        ).enqueue(new Callback(){
+//            public void onResponse(@NonNull Call call, @NonNull Response response)
+//            {
+//
+//                try
+//                {
+//                    if(response.isSuccessful()) {
+//                        if (response.body() != null) {
+//                            String responseBody = response.body().toString();
+//                            JSONObject responseJson = new JSONObject(responseBody);
+//                            JSONArray results = responseJson.getJSONArray("results");
+//                            if (responseJson.getInt("failure") == 1) {
+//                                JSONObject error = (JSONObject) results.get(0);
+//                                showToast(error.getString("error"));
+//                                return;
+//                            }
+//                            showToast("Notification sent Successfully");
+//                        }
+//                    }
+//                      else
+//                      {
+//                          showToast("Error"+response.code());
+//                      }
+//                }
+//                catch (JSONException e) {
+//                    throw new RuntimeException(e);
+//                } finally {
+//                    if (response.body() != null) {
+//                        ((ResponseBody) response.body()).close();
+//                    }
+//                    // Close the response body to prevent resource leak
+//                }
+//
+//            }
+//
+//            public void onFailure(@NonNull Call call,@NonNull Throwable t)
+//            {
+//                showToast(t.getMessage());
+//            }
+//        });
+//    }
+private void sendNotification(String messageBody)
+{
+    ApiClient.getClient().create(ApiService.class).sendMessage(
+            Constants.getRemoteMsgHeaders(),
+            messageBody
 
-        ).enqueue(new Callback<String>(){
-            public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response)
+    ).enqueue(new Callback (){
+        public void onResponse(@NonNull retrofit2.Call call,@NonNull Response response)
+        {
+            if(response.isSuccessful())
             {
-                if(response.isSuccessful())
+                try
                 {
-                    try
+                    if (response.body()!=null)
                     {
-                      if (response.body()!=null)
-                      {
-                          JSONObject responseJson = new JSONObject(response.body());
-                          JSONArray results = responseJson.getJSONArray("results");
-                          if (responseJson.getInt("failure")==1)
-                          {
-                              JSONObject error = (JSONObject) results.get(0);
-                              showToast(error.getString("error"));
-                              return;
-                          }
-                      }
+                        String responseBody = response.body().toString();
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        JSONArray results = responseJson.getJSONArray("results");
+                        if (responseJson.getInt("failure")==1)
+                        {
+                            JSONObject error = (JSONObject) results.get(0);
+                            showToast(error.getString("error"));
+                            return;
+                        }
                     }
-                    catch (JarException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    showToast("Notification sent Successfully");
                 }
-                else
+                catch (JSONException e)
                 {
-                    showToast("Error"+response.code());
+                    e.printStackTrace();
                 }
+                showToast("Notification sent Successfully");
             }
-             public void onFailure(@NonNull Call<String>call,@NonNull Throwable t)
+            else
             {
-                showToast(t.getMessage());
+                showToast("Error"+response.code());
             }
-        });
-    }
+        }
+        public void onFailure(@NonNull retrofit2.Call call,@NonNull Throwable t)
+        {
+            showToast(t.getMessage());
+        }
+    });
+}
     private void listenAvailabitlityOfReceiver(){
         database.collection(Constants.KEY_COLLECTION_USERS)
                 .document(receiverUser.id).addSnapshotListener(ChatActivity.this,(value,error)->{
