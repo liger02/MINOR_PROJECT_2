@@ -135,53 +135,7 @@ public class ChatActivity extends BaseActivity {
     {
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
-//    private void sendNotification(String messageBody)
-//    {
-//        ApiClient.getClient().create(ApiService.class).sendMessage(
-//                Constants.getRemoteMsgHeaders(),
-//                messageBody
-//
-//        ).enqueue(new Callback(){
-//            public void onResponse(@NonNull Call call, @NonNull Response response)
-//            {
-//
-//                try
-//                {
-//                    if(response.isSuccessful()) {
-//                        if (response.body() != null) {
-//                            String responseBody = response.body().toString();
-//                            JSONObject responseJson = new JSONObject(responseBody);
-//                            JSONArray results = responseJson.getJSONArray("results");
-//                            if (responseJson.getInt("failure") == 1) {
-//                                JSONObject error = (JSONObject) results.get(0);
-//                                showToast(error.getString("error"));
-//                                return;
-//                            }
-//                            showToast("Notification sent Successfully");
-//                        }
-//                    }
-//                      else
-//                      {
-//                          showToast("Error"+response.code());
-//                      }
-//                }
-//                catch (JSONException e) {
-//                    throw new RuntimeException(e);
-//                } finally {
-//                    if (response.body() != null) {
-//                        ((ResponseBody) response.body()).close();
-//                    }
-//                    // Close the response body to prevent resource leak
-//                }
-//
-//            }
-//
-//            public void onFailure(@NonNull Call call,@NonNull Throwable t)
-//            {
-//                showToast(t.getMessage());
-//            }
-//        });
-//    }
+
 private void sendNotification(String messageBody)
 {
     ApiClient.getClient().create(ApiService.class).sendMessage(
