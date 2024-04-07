@@ -1,5 +1,7 @@
 package com.example.securemessagingapp.activities;
 
+import static com.example.securemessagingapp.activities.RSA.encrypt;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -52,6 +54,7 @@ public class ChatActivity extends BaseActivity {
     private FirebaseFirestore database;
     private String conversionID=null;
     private Boolean isReceiverAvailable=false;
+    private String encryptedMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,57 +134,67 @@ public class ChatActivity extends BaseActivity {
         binding.inputMessage.setText(null);
 
     }
+
+    private void sendEncrptedMessage()
+    {
+        try {
+
+            String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
+            encryptedMessage = encrypt(binding.inputMessage.getText().toString(), publicKey);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        HashMap<String,Object> message = new HashMap<>();
+        message.put(Constants.KEY_SENDER_ID , preferenceManager.getString(Constants.KEY_USER_ID));
+        message.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
+        message.put(Constants.KEY_MESSAGE, encryptedMessage);
+        message.put(Constants.KEY_TIMESTAMP, new Date());
+        database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
+        if(conversionID != null){
+            updateConversion(encryptedMessage);
+        }else {
+            HashMap<String,Object> conversion = new HashMap<>();
+            conversion.put(Constants.KEY_SENDER_ID,preferenceManager.getString(Constants.KEY_USER_ID));
+            conversion.put(Constants.KEY_SENDER_NAME,preferenceManager.getString(Constants.KEY_NAME));
+            conversion.put(Constants.KEY_SENDER_IMAGE,preferenceManager.getString(Constants.KEY_IMAGE));
+            conversion.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
+            conversion.put(Constants.KEY_RECEIVER_NAME,receiverUser.name);
+            conversion.put(Constants.KEY_RECEIVER_IMAGE,receiverUser.image);
+            conversion.put(Constants.KEY_LAST_MESSAGE,encryptedMessage);
+            conversion.put(Constants.KEY_TIMESTAMP,new Date());
+            addConversion(conversion);
+        }
+        if(!isReceiverAvailable)
+        {
+            try
+            {
+                JSONArray tokens = new JSONArray();
+                tokens.put(receiverUser.token);
+                JSONObject data = new JSONObject();
+                data.put(Constants.KEY_USER_ID,preferenceManager.getString(Constants.KEY_USER_ID));
+                data.put(Constants.KEY_NAME,preferenceManager.getString(Constants.KEY_NAME));
+                data.put(Constants.KEY_FCM_TOKEN,preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+                data.put(Constants.KEY_MESSAGE,encryptedMessage);
+
+                JSONObject body = new JSONObject();
+                body.put(Constants.REMOTE_MSG_DATA,data);
+                body.put(Constants.REMOTE_MSG_REGISTRATION_IDS,tokens);
+
+                sendNotification(body.toString());
+            }
+            catch (Exception exception)
+            {
+                showToast(exception.getMessage());
+            }
+        }
+        binding.inputMessage.setText(null);
+
+    }
     private void showToast(String message)
     {
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
-//    private void sendNotification(String messageBody)
-//    {
-//        ApiClient.getClient().create(ApiService.class).sendMessage(
-//                Constants.getRemoteMsgHeaders(),
-//                messageBody
-//
-//        ).enqueue(new Callback(){
-//            public void onResponse(@NonNull Call call, @NonNull Response response)
-//            {
-//
-//                try
-//                {
-//                    if(response.isSuccessful()) {
-//                        if (response.body() != null) {
-//                            String responseBody = response.body().toString();
-//                            JSONObject responseJson = new JSONObject(responseBody);
-//                            JSONArray results = responseJson.getJSONArray("results");
-//                            if (responseJson.getInt("failure") == 1) {
-//                                JSONObject error = (JSONObject) results.get(0);
-//                                showToast(error.getString("error"));
-//                                return;
-//                            }
-//                            showToast("Notification sent Successfully");
-//                        }
-//                    }
-//                      else
-//                      {
-//                          showToast("Error"+response.code());
-//                      }
-//                }
-//                catch (JSONException e) {
-//                    throw new RuntimeException(e);
-//                } finally {
-//                    if (response.body() != null) {
-//                        ((ResponseBody) response.body()).close();
-//                    }
-//                    // Close the response body to prevent resource leak
-//                }
-//
-//            }
-//
-//            public void onFailure(@NonNull Call call,@NonNull Throwable t)
-//            {
-//                showToast(t.getMessage());
-//            }
-//        });
-//    }
+
 private void sendNotification(String messageBody)
 {
     ApiClient.getClient().create(ApiService.class).sendMessage(
@@ -335,6 +348,7 @@ private void sendNotification(String messageBody)
     {
         binding.imageBack.setOnClickListener(v->onBackPressed());
         binding.layoutSend.setOnClickListener(v -> sendMessage());
+        binding.layoutSend.setOnClickListener(v -> sendEncrptedMessage());
     }
     private String getReadableDateTime(Date date)
     {

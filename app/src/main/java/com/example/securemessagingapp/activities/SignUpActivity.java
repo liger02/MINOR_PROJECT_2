@@ -1,8 +1,7 @@
 package com.example.securemessagingapp.activities;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
+import static com.example.securemessagingapp.activities.RSA.generateKeyPair;
+import static com.example.securemessagingapp.activities.RSA.keyToString;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,25 +14,27 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
-//import com.example.securemessagingapp.R;
-import com.example.securemessagingapp.databinding.ActivitySignInBinding;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.securemessagingapp.databinding.ActivitySignUpBinding;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.security.KeyPair;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
     private PreferenceManager preferenceManager;
     private String encodedImage;
+    private String privateKey,publicKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,12 +64,23 @@ public class SignUpActivity extends AppCompatActivity {
     private void signUp()
     {
         loading(true);
+        try {
+
+            KeyPair keyPair = generateKeyPair();
+            publicKey = keyToString(keyPair.getPublic());
+            privateKey = keyToString(keyPair.getPrivate());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String,Object>user = new HashMap<>();
         user.put(Constants.KEY_NAME, binding.inputName.getText().toString());
         user.put(Constants.KEY_EMAIL,binding.inputEmail.getText().toString());
         user.put(Constants.KEY_PASSWORD,binding.inputPassword.getText().toString());
         user.put(Constants.KEY_IMAGE,encodedImage);
+        user.put(Constants.PRIVATE_KEY,privateKey);
+        user.put(Constants.PUBLIC_KEY,publicKey);
+
         database.collection(Constants.KEY_COLLECTION_USERS)
                 .add(user)
                 .addOnSuccessListener(documentReference -> {
@@ -77,6 +89,8 @@ public class SignUpActivity extends AppCompatActivity {
                     preferenceManager.putString(Constants.KEY_USER_ID,documentReference.getId());
                     preferenceManager.putString(Constants.KEY_NAME,binding.inputName.getText().toString());
                     preferenceManager.putString(Constants.KEY_IMAGE,encodedImage);
+//                    preferenceManager.putString(Constants.PRIVATE_KEY,privateKey);
+//                    preferenceManager.putString(Constants.PUBLIC_KEY,publicKey);
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -167,5 +181,6 @@ public class SignUpActivity extends AppCompatActivity {
             binding.buttonSignUp.setVisibility(View.VISIBLE);
         }
     }
+
 
 }

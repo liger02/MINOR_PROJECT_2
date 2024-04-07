@@ -30,6 +30,8 @@ public class  Constants {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+    public static final String PRIVATE_KEY = "private_key";
+    public static final String PUBLIC_KEY = "public_key";
     public static  HashMap<String,String>remoteMsgHeaders = null;
     public static HashMap<String,String> getRemoteMsgHeaders()
     {
