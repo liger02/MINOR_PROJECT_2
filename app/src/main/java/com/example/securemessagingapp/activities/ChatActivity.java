@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-//import retrofit2.Callback;
-//import retrofit2.Response;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -144,7 +142,7 @@ public class ChatActivity extends BaseActivity {
             //String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
             String SpublicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
 //            database.collection(Constants.KEY_COLLECTION_USERS)
-//                    .whereEqualTo(Constants.KEY_USER_ID,receiverUser.id)
+//                    .whereEqualTo(Constants.KEY_EMAIL,receiverUser.email)
 //                    .get()
 //                    .addOnCompleteListener(task -> {
 //                                if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
@@ -154,15 +152,25 @@ public class ChatActivity extends BaseActivity {
 //                                }
 //                            });
 
+            database.collection(Constants.KEY_COLLECTION_USERS)
+                    .document(receiverUser.id).addSnapshotListener(ChatActivity.this,(value,error)-> {
+                            if (error != null) {
+                                return;
+                            }
+                            if (value != null) {
+                                receiverUser.publicKey = value.getString(Constants.PUBLIC_KEY);
+                            }
+                    });
+
 
             System.out.println("sender  "+SpublicKey);
-            System.out.println("remail  "+receiverUser.publicKey);
+            System.out.println("rkey  "+receiverUser.publicKey);
 
 
             String messageText = binding.inputMessage.getText().toString();
             if (publicKey == null ) {
                // Log.e(TAG, "Error: Public key is null or message is empty");
-                showToast("recieve   "+publicKey);
+                showToast("Errorr: public key is null");
                 return;
             }
             encryptedMessage = encrypt(binding.inputMessage.getText().toString(), receiverUser.publicKey);
