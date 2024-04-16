@@ -56,6 +56,7 @@ public class ChatActivity extends BaseActivity {
     private String conversionID=null;
     private Boolean isReceiverAvailable=false;
     private String encryptedMessage;
+    private String publicKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,10 +142,20 @@ public class ChatActivity extends BaseActivity {
         try {
 
             //String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
-            String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
+            String SpublicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
+            database.collection(Constants.KEY_COLLECTION_USERS)
+                    .whereEqualTo(Constants.KEY_RECEIVER_ID,receiverUser.id)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                                    DocumentSnapshot ds = task.getResult().getDocuments().get(0);
+                                    publicKey = ds.getString(Constants.PUBLIC_KEY);
+                                }
+                            });
+            System.out.println("reciever  "+publicKey);
+            System.out.println("sender  "+SpublicKey);
 
-            System.out.println(publicKey);
-        //    String publicKe =preferenceManager.getString(Constants.KEY_USER_ID);
+
             String messageText = binding.inputMessage.getText().toString();
             if (publicKey == null ) {
                // Log.e(TAG, "Error: Public key is null or message is empty");

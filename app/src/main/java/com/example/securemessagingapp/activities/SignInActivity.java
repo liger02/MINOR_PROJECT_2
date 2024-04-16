@@ -1,23 +1,18 @@
 package com.example.securemessagingapp.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.securemessagingapp.R;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.securemessagingapp.databinding.ActivitySignInBinding;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.regex.Pattern;
 
 public class SignInActivity extends AppCompatActivity {
     private ActivitySignInBinding binding;
@@ -59,6 +54,8 @@ public class SignInActivity extends AppCompatActivity {
                         preferenceManager.putString(Constants.KEY_USER_ID,documentSnapshot.getId());
                         preferenceManager.putString(Constants.KEY_NAME,documentSnapshot.getString(Constants.KEY_NAME));
                         preferenceManager.putString(Constants.KEY_IMAGE,documentSnapshot.getString(Constants.KEY_IMAGE));
+//                        preferenceManager.putString(Constants.PUBLIC_KEY,documentSnapshot.getString(Constants.PUBLIC_KEY));
+//                        preferenceManager.putString(Constants.PRIVATE_KEY,documentSnapshot.getString(Constants.PRIVATE_KEY));
                         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
