@@ -168,9 +168,10 @@ public class ChatActivity extends BaseActivity {
 
 
             String messageText = binding.inputMessage.getText().toString();
-            if (publicKey == null ) {
+            if (publicKey != null ) {
                // Log.e(TAG, "Error: Public key is null or message is empty");
                 showToast("Errorr: public key is null");
+
                 return;
             }
             encryptedMessage = encrypt(binding.inputMessage.getText().toString(), receiverUser.publicKey);
