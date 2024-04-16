@@ -143,26 +143,29 @@ public class ChatActivity extends BaseActivity {
 
             //String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
             String SpublicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
-            database.collection(Constants.KEY_COLLECTION_USERS)
-                    .whereEqualTo(Constants.KEY_RECEIVER_ID,receiverUser.id)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                                if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
-                                    DocumentSnapshot ds = task.getResult().getDocuments().get(0);
-                                    publicKey = ds.getString(Constants.PUBLIC_KEY);
-                                }
-                            });
-            System.out.println("reciever  "+publicKey);
+//            database.collection(Constants.KEY_COLLECTION_USERS)
+//                    .whereEqualTo(Constants.KEY_USER_ID,receiverUser.id)
+//                    .get()
+//                    .addOnCompleteListener(task -> {
+//                                if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+//                                    DocumentSnapshot ds = task.getResult().getDocuments().get(0);
+//                                    publicKey = ds.getString(Constants.PUBLIC_KEY);
+//                                    System.out.println("reciever  "+publicKey);
+//                                }
+//                            });
+
+
             System.out.println("sender  "+SpublicKey);
+            System.out.println("remail  "+receiverUser.publicKey);
 
 
             String messageText = binding.inputMessage.getText().toString();
             if (publicKey == null ) {
                // Log.e(TAG, "Error: Public key is null or message is empty");
-                showToast("Nhbfjefjbjbdsjfaje");
+                showToast("recieve   "+publicKey);
                 return;
             }
-            encryptedMessage = encrypt(binding.inputMessage.getText().toString(), publicKey);
+            encryptedMessage = encrypt(binding.inputMessage.getText().toString(), receiverUser.publicKey);
         }catch (Exception e){
             e.printStackTrace();
         }
