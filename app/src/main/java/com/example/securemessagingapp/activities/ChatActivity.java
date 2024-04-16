@@ -40,9 +40,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+//import retrofit2.Callback;
+//import retrofit2.Response;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 public class ChatActivity extends BaseActivity {
@@ -139,7 +140,15 @@ public class ChatActivity extends BaseActivity {
     {
         try {
 
+            //String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
             String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
+        //    String publicKe =preferenceManager.getString(Constants.KEY_USER_ID);
+            String messageText = binding.inputMessage.getText().toString();
+            if (publicKey == null ) {
+               // Log.e(TAG, "Error: Public key is null or message is empty");
+                showToast("Nhbfjefjbjbdsjfaje");
+                return;
+            }
             encryptedMessage = encrypt(binding.inputMessage.getText().toString(), publicKey);
         }catch (Exception e){
             e.printStackTrace();
@@ -347,7 +356,7 @@ private void sendNotification(String messageBody)
     private void setListeners()
     {
         binding.imageBack.setOnClickListener(v->onBackPressed());
-        binding.layoutSend.setOnClickListener(v -> sendMessage());
+       // binding.layoutSend.setOnClickListener(v -> sendMessage());
         binding.layoutSend.setOnClickListener(v -> sendEncrptedMessage());
     }
     private String getReadableDateTime(Date date)
