@@ -142,6 +142,8 @@ public class ChatActivity extends BaseActivity {
 
             //String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
             String publicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
+
+            System.out.println(publicKey);
         //    String publicKe =preferenceManager.getString(Constants.KEY_USER_ID);
             String messageText = binding.inputMessage.getText().toString();
             if (publicKey == null ) {
@@ -357,7 +359,18 @@ private void sendNotification(String messageBody)
     {
         binding.imageBack.setOnClickListener(v->onBackPressed());
        // binding.layoutSend.setOnClickListener(v -> sendMessage());
-        binding.layoutSend.setOnClickListener(v -> sendEncrptedMessage());
+        binding.layoutSend.setOnClickListener(x->{
+            if(binding.encrypted.isChecked()==true){
+//                binding.layoutSend.setOnClickListener(v->sendEncrptedMessage());
+                sendEncrptedMessage();
+            }
+
+            else{
+//                binding.layoutSend.setOnClickListener(v -> sendMessage());
+                sendMessage();
+            }
+        });
+
     }
     private String getReadableDateTime(Date date)
     {

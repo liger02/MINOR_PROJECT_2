@@ -67,8 +67,12 @@ public class SignUpActivity extends AppCompatActivity {
         try {
 
             KeyPair keyPair = generateKeyPair();
+            System.out.println(keyPair.getPrivate());
+            System.out.println(keyPair.getPublic());
             publicKey = keyToString(keyPair.getPublic());
             privateKey = keyToString(keyPair.getPrivate());
+            System.out.println(publicKey);
+            System.out.println(privateKey);
         }catch (Exception e){
             e.printStackTrace();
         }
