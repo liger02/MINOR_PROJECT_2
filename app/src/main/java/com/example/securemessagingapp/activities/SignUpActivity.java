@@ -1,7 +1,7 @@
 package com.example.securemessagingapp.activities;
 
-import static com.example.securemessagingapp.activities.RSA.generateKeyPair;
-import static com.example.securemessagingapp.activities.RSA.keyToString;
+import static com.example.securemessagingapp.methods.RSA.generateKeyPair;
+import static com.example.securemessagingapp.methods.RSA.keyToString;
 
 import android.content.Intent;
 import android.graphics.Bitmap;

@@ -107,6 +107,8 @@ static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder{
      void setData(ChatMessage chatMessage , Bitmap receiverprofileImage)
      {
          binding.textMessage.setText(chatMessage.message);
+         //yha pe changes honge reciever ke liye
+         //or chat type ek nya object firebase me add karna hoga
          binding.textDateTime.setText(chatMessage.dateTime);
          if(receiverprofileImage != null)
          {

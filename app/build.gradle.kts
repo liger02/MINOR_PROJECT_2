@@ -66,4 +66,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("org.json:json:20240303")
 
+    //Biometric
+    implementation("androidx.biometric:biometric:1.0.1");
+
 }

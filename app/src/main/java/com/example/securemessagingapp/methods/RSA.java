@@ -1,4 +1,4 @@
-package com.example.securemessagingapp.activities;
+package com.example.securemessagingapp.methods;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;

@@ -1,6 +1,6 @@
 package com.example.securemessagingapp.activities;
 
-import static com.example.securemessagingapp.activities.RSA.encrypt;
+import static com.example.securemessagingapp.methods.RSA.encrypt;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
