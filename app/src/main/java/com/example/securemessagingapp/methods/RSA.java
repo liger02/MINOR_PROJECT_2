@@ -35,7 +35,7 @@ public class RSA {
     public static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM);
         SecureRandom secureRandom = new SecureRandom();
-        keyPairGenerator.initialize(2048, secureRandom);
+        keyPairGenerator.initialize(1024, secureRandom);
         return keyPairGenerator.generateKeyPair();
     }
 

@@ -80,9 +80,21 @@ public class ChatActivity extends BaseActivity {
                 getBitmapFromEncodedString(receiverUser.image),
                 preferenceManager.getString(Constants.KEY_USER_ID)
 
+
         );
         binding.chatRecyclerView.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .document(receiverUser.id).addSnapshotListener(ChatActivity.this,(value,error)-> {
+                    if (error != null) {
+                        return;
+                    }
+                    if (value != null) {
+                        receiverUser.publicKey = value.getString(Constants.PUBLIC_KEY);
+                        receiverUser.privateKey = value.getString(Constants.PRIVATE_KEY);
+                    }
+                });
+
     }
 
     private void sendMessage()
@@ -92,6 +104,7 @@ public class ChatActivity extends BaseActivity {
         message.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
         message.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
         message.put(Constants.KEY_TIMESTAMP, new Date());
+        message.put(Constants.IS_ENCRYPTED,"false");
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
         if(conversionID != null){
             updateConversion(binding.inputMessage.getText().toString());
@@ -105,6 +118,7 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Constants.KEY_RECEIVER_IMAGE,receiverUser.image);
             conversion.put(Constants.KEY_LAST_MESSAGE,binding.inputMessage.getText().toString());
             conversion.put(Constants.KEY_TIMESTAMP,new Date());
+            conversion.put(Constants.IS_ENCRYPTED,"false");
             addConversion(conversion);
         }
         if(!isReceiverAvailable)
@@ -140,19 +154,12 @@ public class ChatActivity extends BaseActivity {
 
             String SpublicKey = preferenceManager.getString(Constants.PUBLIC_KEY);
 
-            database.collection(Constants.KEY_COLLECTION_USERS)
-                    .document(receiverUser.id).addSnapshotListener(ChatActivity.this,(value,error)-> {
-                            if (error != null) {
-                                return;
-                            }
-                            if (value != null) {
-                                receiverUser.publicKey = value.getString(Constants.PUBLIC_KEY);
-                            }
-                    });
+
 
 
             System.out.println("sender  "+SpublicKey);
             System.out.println("rkey  "+receiverUser.publicKey);
+            System.out.println("rPKey  "+receiverUser.privateKey);
 
 
             if (receiverUser.publicKey == null ) {
@@ -170,6 +177,7 @@ public class ChatActivity extends BaseActivity {
         message.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
         message.put(Constants.KEY_MESSAGE, encryptedMessage);
         message.put(Constants.KEY_TIMESTAMP, new Date());
+        message.put(Constants.IS_ENCRYPTED,"true");
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
         if(conversionID != null){
             updateConversion(encryptedMessage);
@@ -183,6 +191,7 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Constants.KEY_RECEIVER_IMAGE,receiverUser.image);
             conversion.put(Constants.KEY_LAST_MESSAGE,encryptedMessage);
             conversion.put(Constants.KEY_TIMESTAMP,new Date());
+            conversion.put(Constants.IS_ENCRYPTED,"true");
             addConversion(conversion);
         }
         if(!isReceiverAvailable)
@@ -318,12 +327,17 @@ private void sendNotification(String messageBody)
             {
                 if(documentChange.getType()==DocumentChange.Type.ADDED)
                 {
+
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     chatMessage.receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
                     chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
                     chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
+                    chatMessage.isEncrypted=documentChange.getDocument().getString(Constants.IS_ENCRYPTED);
+                    chatMessage.privateKey = preferenceManager.getString(Constants.PRIVATE_KEY);
+                    System.out.println(receiverUser.privateKey);
+                    System.out.println(chatMessage.privateKey);
                     chatMessages.add(chatMessage);
 
 

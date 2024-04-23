@@ -1,5 +1,7 @@
 package com.example.securemessagingapp.adapters;
 
+import static com.example.securemessagingapp.methods.RSA.decrypt;
+
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -10,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.securemessagingapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.securemessagingapp.databinding.ItemContainerSentMessageBinding;
 import com.example.securemessagingapp.models.ChatMessage;
+
 import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private final List<ChatMessage> chatMessages;
 private  Bitmap receiverProfileImage;
 private final String senderId;
+private static String dcryprMessage;
 public static final int VIEW_TYPE_SENT = 1;
 public static final int VIEW_TYPE_RECEIVED = 2;
 public void setReceiverProfileImage(Bitmap bitmap)
@@ -106,9 +110,31 @@ static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder{
      }
      void setData(ChatMessage chatMessage , Bitmap receiverprofileImage)
      {
-         binding.textMessage.setText(chatMessage.message);
-         //yha pe changes honge reciever ke liye
-         //or chat type ek nya object firebase me add karna hoga
+
+
+
+         System.out.println(chatMessage.isEncrypted);
+
+         if(chatMessage.isEncrypted.equals("true")){
+             try {
+                 System.out.println("pKey  "+chatMessage.privateKey);
+                 System.out.println("mmmm  "+chatMessage.message);
+                 dcryprMessage = decrypt(chatMessage.message, chatMessage.privateKey);
+                 System.out.println("ddddd   "+dcryprMessage);
+                 binding.textMessage.setText(chatMessage.message);
+
+             }catch (Exception e){
+                 e.printStackTrace();
+             }
+             binding.textMessage.setOnClickListener(v->{
+                 binding.textMessage.setText(dcryprMessage);
+             });
+
+
+         }else {
+             binding.textMessage.setText(chatMessage.message);
+
+         }
          binding.textDateTime.setText(chatMessage.dateTime);
          if(receiverprofileImage != null)
          {
