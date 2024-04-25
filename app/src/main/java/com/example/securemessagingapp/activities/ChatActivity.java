@@ -39,17 +39,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
 public class ChatActivity extends BaseActivity {
-    private static ActivityChatBinding binding;
+    public static ActivityChatBinding binding;
     private User receiverUser;
     private List<ChatMessage> chatMessages;
     private ChatAdapter chatAdapter;
-    private PreferenceManager preferenceManager;
+    private static PreferenceManager preferenceManager;
     private static FirebaseFirestore database;
     private String conversionID=null;
     private Boolean isReceiverAvailable=false;
@@ -66,6 +67,7 @@ public class ChatActivity extends BaseActivity {
         });*/
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        binding.authWindow.setVisibility(View.GONE);
         setListeners();
         loadReceiverDetails();
         init();
@@ -443,13 +445,29 @@ private void sendNotification(String messageBody)
     };
 
     public static boolean isAuthenticated(){
-
+        AtomicBoolean b = new AtomicBoolean(false);
         binding.authWindow.setVisibility(View.VISIBLE);
-        boolean b = database.collection(Constants.KEY_COLLECTION_USERS)
-                .document(Constants.KEY_PASSWORD)
-                .equals(binding.checkpass.getText().toString());
-        binding.authWindow.setVisibility(View.GONE);
-        return b;
+        binding.setauth.setOnClickListener(v->{
+            System.out.println("Enterinhgyfyjukytr");
+            database.collection(Constants.KEY_COLLECTION_USERS)
+                    .whereEqualTo(Constants.KEY_USER_ID,preferenceManager.getString(Constants.KEY_USER_ID))
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size()>0) {
+                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                            if(documentSnapshot.getString(Constants.KEY_PASSWORD).equals(binding.checkpass.getText().toString())){
+                                b.set(true);
+                            }
+                        }
+
+                    });
+            System.out.println("bbbbbbbbb  "+b.get()+"    "+b);
+            System.out.println("passw   "+binding.checkpass.getText().toString());
+
+        });
+
+
+        return b.get();
     }
 
     @Override

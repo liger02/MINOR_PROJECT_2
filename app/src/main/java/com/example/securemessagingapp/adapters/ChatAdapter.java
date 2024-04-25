@@ -4,6 +4,7 @@ import static com.example.securemessagingapp.methods.RSA.decrypt;
 
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -129,7 +130,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                  binding.textMessage.setOnClickListener(v->{
 //                     authenticate.authenticateUser();
                      if(ChatActivity.isAuthenticated()) {
+                         ChatActivity.binding.authWindow.setVisibility(View.GONE);
                          binding.textMessage.setText(dcryprMessage);
+
                      }
                  });
 
