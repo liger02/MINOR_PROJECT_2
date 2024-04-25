@@ -45,12 +45,12 @@ import retrofit2.Response;
 
 
 public class ChatActivity extends BaseActivity {
-    private ActivityChatBinding binding;
+    private static ActivityChatBinding binding;
     private User receiverUser;
     private List<ChatMessage> chatMessages;
     private ChatAdapter chatAdapter;
     private PreferenceManager preferenceManager;
-    private FirebaseFirestore database;
+    private static FirebaseFirestore database;
     private String conversionID=null;
     private Boolean isReceiverAvailable=false;
     private String encryptedMessage;
@@ -441,6 +441,16 @@ private void sendNotification(String messageBody)
             conversionID = documentSnapshot.getId();
         }
     };
+
+    public static boolean isAuthenticated(){
+
+        binding.authWindow.setVisibility(View.VISIBLE);
+        boolean b = database.collection(Constants.KEY_COLLECTION_USERS)
+                .document(Constants.KEY_PASSWORD)
+                .equals(binding.checkpass.getText().toString());
+        binding.authWindow.setVisibility(View.GONE);
+        return b;
+    }
 
     @Override
     protected void onResume() {

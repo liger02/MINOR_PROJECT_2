@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.securemessagingapp.activities.ChatActivity;
 import com.example.securemessagingapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.securemessagingapp.databinding.ItemContainerSentMessageBinding;
 import com.example.securemessagingapp.models.ChatMessage;
@@ -16,15 +17,15 @@ import com.example.securemessagingapp.models.ChatMessage;
 import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private final List<ChatMessage> chatMessages;
-private  Bitmap receiverProfileImage;
-private final String senderId;
-private static String dcryprMessage;
-public static final int VIEW_TYPE_SENT = 1;
-public static final int VIEW_TYPE_RECEIVED = 2;
-public void setReceiverProfileImage(Bitmap bitmap)
-{
-    receiverProfileImage = bitmap;
-}
+    private  Bitmap receiverProfileImage;
+    private final String senderId;
+    private static String dcryprMessage;
+    public static final int VIEW_TYPE_SENT = 1;
+    public static final int VIEW_TYPE_RECEIVED = 2;
+    public void setReceiverProfileImage(Bitmap bitmap)
+    {
+        receiverProfileImage = bitmap;
+    }
 
 
     public ChatAdapter(List<ChatMessage> chatMessages, Bitmap receiverProfileImage, String senderId) {
@@ -89,57 +90,89 @@ public void setReceiverProfileImage(Bitmap bitmap)
     }
 
     static class SentMessageViewHolder extends RecyclerView.ViewHolder{
-     private  final ItemContainerSentMessageBinding binding;
-     SentMessageViewHolder(ItemContainerSentMessageBinding itemContainerSentMessageBinding)
-     {
-         super(itemContainerSentMessageBinding.getRoot());
-         binding = itemContainerSentMessageBinding;
-     }
-     void setData(ChatMessage chatMessage)
-     {
-         binding.textMessage.setText(chatMessage.message);
-         binding.textDateTime.setText(chatMessage.dateTime);
-     }
- }
-static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder{
-     private final ItemContainerReceivedMessageBinding binding;
-     ReceivedMessageViewHolder(ItemContainerReceivedMessageBinding itemContainerReceivedMessageBinding)
-     {
-         super(itemContainerReceivedMessageBinding.getRoot());
-         binding = itemContainerReceivedMessageBinding;
-     }
-     void setData(ChatMessage chatMessage , Bitmap receiverprofileImage)
-     {
+         private  final ItemContainerSentMessageBinding binding;
+         SentMessageViewHolder(ItemContainerSentMessageBinding itemContainerSentMessageBinding)
+         {
+             super(itemContainerSentMessageBinding.getRoot());
+             binding = itemContainerSentMessageBinding;
+         }
+         void setData(ChatMessage chatMessage)
+         {
+             binding.textMessage.setText(chatMessage.message);
+             binding.textDateTime.setText(chatMessage.dateTime);
+         }
+    }
+    static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+         private final ItemContainerReceivedMessageBinding binding;
+         ReceivedMessageViewHolder(ItemContainerReceivedMessageBinding itemContainerReceivedMessageBinding)
+         {
+             super(itemContainerReceivedMessageBinding.getRoot());
+             binding = itemContainerReceivedMessageBinding;
+         }
+         void setData(ChatMessage chatMessage , Bitmap receiverprofileImage)
+         {
+//             Authenticate authenticate = new Authenticate();
+
+             System.out.println(chatMessage.isEncrypted);
+
+             if(chatMessage.isEncrypted.equals("true")){
+                 try {
+                     System.out.println("pKey  "+chatMessage.privateKey);
+                     System.out.println("mmmm  "+chatMessage.message);
+                     dcryprMessage = decrypt(chatMessage.message, chatMessage.privateKey);
+                     System.out.println("ddddd   "+dcryprMessage);
+                     binding.textMessage.setText(chatMessage.message);
+
+                 }catch (Exception e){
+                     e.printStackTrace();
+                 }
+                 binding.textMessage.setOnClickListener(v->{
+//                     authenticate.authenticateUser();
+                     if(ChatActivity.isAuthenticated()) {
+                         binding.textMessage.setText(dcryprMessage);
+                     }
+                 });
 
 
-
-         System.out.println(chatMessage.isEncrypted);
-
-         if(chatMessage.isEncrypted.equals("true")){
-             try {
-                 System.out.println("pKey  "+chatMessage.privateKey);
-                 System.out.println("mmmm  "+chatMessage.message);
-                 dcryprMessage = decrypt(chatMessage.message, chatMessage.privateKey);
-                 System.out.println("ddddd   "+dcryprMessage);
+             }else {
                  binding.textMessage.setText(chatMessage.message);
 
-             }catch (Exception e){
-                 e.printStackTrace();
              }
-             binding.textMessage.setOnClickListener(v->{
-                 binding.textMessage.setText(dcryprMessage);
-             });
-
-
-         }else {
-             binding.textMessage.setText(chatMessage.message);
-
+             binding.textDateTime.setText(chatMessage.dateTime);
+             if(receiverprofileImage != null)
+             {
+                 binding.imageProfile.setImageBitmap(receiverprofileImage);
+             }
          }
-         binding.textDateTime.setText(chatMessage.dateTime);
-         if(receiverprofileImage != null)
-         {
-             binding.imageProfile.setImageBitmap(receiverprofileImage);
-         }
-     }
-}
+
+    }
+//    public static class Authenticate extends FragmentActivity {
+//        // ...
+//
+//        private void authenticateUser() {
+//            BiometricUtils.showBiometricPrompt(
+//                    this,
+//                    new BiometricPrompt.AuthenticationCallback() {
+//                        @Override
+//                        public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+//                            super.onAuthenticationError(errorCode, errString);
+//                            // Handle error.
+//                        }
+//
+//                        @Override
+//                        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+//                            super.onAuthenticationSucceeded(result);
+//                            // Authentication succeeded!
+//                        }
+//
+//                        @Override
+//                        public void onAuthenticationFailed() {
+//                            super.onAuthenticationFailed();
+//                            // User biometric rejected.
+//                        }
+//                    }
+//            );
+//        }
+//    }
+
 }
