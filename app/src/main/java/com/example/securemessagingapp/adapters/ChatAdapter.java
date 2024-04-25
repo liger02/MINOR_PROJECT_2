@@ -4,7 +4,6 @@ import static com.example.securemessagingapp.methods.RSA.decrypt;
 
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,8 @@ import com.example.securemessagingapp.activities.ChatActivity;
 import com.example.securemessagingapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.securemessagingapp.databinding.ItemContainerSentMessageBinding;
 import com.example.securemessagingapp.models.ChatMessage;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -129,11 +130,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                  }
                  binding.textMessage.setOnClickListener(v->{
 //                     authenticate.authenticateUser();
-                     if(ChatActivity.isAuthenticated()) {
-                         ChatActivity.binding.authWindow.setVisibility(View.GONE);
-                         binding.textMessage.setText(dcryprMessage);
 
-                     }
+                         ChatActivity.isAuthenticated(new OnCompleteListener<Boolean>() {
+                             @Override
+                             public void onComplete(@NonNull Task< Boolean > task) {
+                                 if (task.getResult()) {
+                                     // Authentication successful
+
+                                     binding.textMessage.setText(dcryprMessage);
+
+                                 } else {
+                                     // Authentication failed
+//                                     Toast("Authentication Failed! Please try again.");
+                                 }
+                             }
+                         });
+
                  });
 
 

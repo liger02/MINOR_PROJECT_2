@@ -68,5 +68,7 @@ dependencies {
 
     //Biometric
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.google.android.gms:play-services-tasks:17.2.1")
+
 
 }

@@ -20,6 +20,7 @@ import com.example.securemessagingapp.network.ApiService;
 import com.example.securemessagingapp.utilities.Constants;
 import com.example.securemessagingapp.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,10 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 
 public class ChatActivity extends BaseActivity {
@@ -444,30 +445,29 @@ private void sendNotification(String messageBody)
         }
     };
 
-    public static boolean isAuthenticated(){
-        AtomicBoolean b = new AtomicBoolean(false);
+    public static void isAuthenticated(OnCompleteListener<Boolean> onCompleteListener) {
+        String userEmail = preferenceManager.getString(Constants.KEY_EMAIL);
+        String userPassword = binding.checkpass.getText().toString();
         binding.authWindow.setVisibility(View.VISIBLE);
         binding.setauth.setOnClickListener(v->{
-            System.out.println("Enterinhgyfyjukytr");
-            database.collection(Constants.KEY_COLLECTION_USERS)
-                    .whereEqualTo(Constants.KEY_USER_ID,preferenceManager.getString(Constants.KEY_USER_ID))
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size()>0) {
-                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
-                            if(documentSnapshot.getString(Constants.KEY_PASSWORD).equals(binding.checkpass.getText().toString())){
-                                b.set(true);
-                            }
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .whereEqualTo(Constants.KEY_EMAIL, userEmail)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                        String storedPassword = documentSnapshot.getString(Constants.KEY_PASSWORD);
+
+                        if (storedPassword != null && storedPassword.equals(userPassword)) {
+                            onCompleteListener.onComplete(Tasks.forResult(true));
+                        } else {
+                            onCompleteListener.onComplete(Tasks.forResult(false));
                         }
-
-                    });
-            System.out.println("bbbbbbbbb  "+b.get()+"    "+b);
-            System.out.println("passw   "+binding.checkpass.getText().toString());
-
+                    } else {
+                        onCompleteListener.onComplete(Tasks.forResult(false));
+                    }
+                });
         });
-
-
-        return b.get();
     }
 
     @Override
