@@ -128,24 +128,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                  }catch (Exception e){
                      e.printStackTrace();
                  }
+
                  binding.textMessage.setOnClickListener(v->{
 //                     authenticate.authenticateUser();
+                     ChatActivity.isAuthenticated(new OnCompleteListener< Boolean >() {
+                         @Override
+                         public void onComplete(@NonNull Task< Boolean > task) {
+                             if (task.getResult()) {
+                                 // Authentication successful
+                                 binding.textMessage.setText(dcryprMessage);
 
-                         ChatActivity.isAuthenticated(new OnCompleteListener<Boolean>() {
-                             @Override
-                             public void onComplete(@NonNull Task< Boolean > task) {
-                                 if (task.getResult()) {
-                                     // Authentication successful
 
-                                     binding.textMessage.setText(dcryprMessage);
-
-                                 } else {
-                                     // Authentication failed
+                             } else {
+                                 // Authentication failed
 //                                     Toast("Authentication Failed! Please try again.");
-                                 }
+                                 System.out.println("Some error false..." + task.getResult());
                              }
-                         });
-
+                         }
+                     });
                  });
 
 

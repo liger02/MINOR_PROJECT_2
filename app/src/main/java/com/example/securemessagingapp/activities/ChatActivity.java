@@ -445,28 +445,39 @@ private void sendNotification(String messageBody)
         }
     };
 
-    public static void isAuthenticated(OnCompleteListener<Boolean> onCompleteListener) {
+    public static void isAuthenticated(OnCompleteListener< Boolean > onCompleteListener) {
         String userEmail = preferenceManager.getString(Constants.KEY_EMAIL);
-        String userPassword = binding.checkpass.getText().toString();
+
         binding.authWindow.setVisibility(View.VISIBLE);
         binding.setauth.setOnClickListener(v->{
-        database.collection(Constants.KEY_COLLECTION_USERS)
-                .whereEqualTo(Constants.KEY_EMAIL, userEmail)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
-                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
-                        String storedPassword = documentSnapshot.getString(Constants.KEY_PASSWORD);
+            String userPassword = binding.checkpass.getText().toString();
+            database.collection(Constants.KEY_COLLECTION_USERS)
+                    .whereEqualTo(Constants.KEY_EMAIL, userEmail)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                            String storedPassword = documentSnapshot.getString(Constants.KEY_PASSWORD);
 
-                        if (storedPassword != null && storedPassword.equals(userPassword)) {
-                            onCompleteListener.onComplete(Tasks.forResult(true));
+                            if (storedPassword != null && storedPassword.equals(userPassword)) {
+                                onCompleteListener.onComplete(Tasks.forResult(true));
+//                                showToast("Authentication Successful.");
+                                System.out.println("Authentication Successful");
+                                binding.authWindow.setVisibility(View.GONE);
+                            } else {
+                                onCompleteListener.onComplete(Tasks.forResult(false));
+//                                showToast("Password Doesn't match!");
+                                System.out.println("Password Doesn't match!");
+                                binding.authWindow.setVisibility(View.VISIBLE);
+                            }
                         } else {
                             onCompleteListener.onComplete(Tasks.forResult(false));
+//                            showToast("Authentication Failed!.");
+                            System.out.println("Authentication Failed!");
+                            binding.authWindow.setVisibility(View.GONE);
                         }
-                    } else {
-                        onCompleteListener.onComplete(Tasks.forResult(false));
-                    }
-                });
+                        binding.checkpass.setText(null);
+                    });
         });
     }
 
